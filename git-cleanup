@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-ignores=("master" "dev")
-ignores_regex=""
+ignores="|master|dev"
 
 while getopts ":h:i:" opt; do
   case $opt in
@@ -33,17 +32,8 @@ fi
 if [[ $option_i ]]; then
   for x in $(echo $option_i | tr "," "\n")
   do
-    ignores+=($x)
+    ignores+="|${x}"
   done
-
-  echo $ignores
 fi
 
-for y in ${ignores[@]}
-do
-  ignores_regex+="|${y}"
-done
-
-ignores_regex="(^\*${ignores_regex})"
-
-git branch --merged | egrep -v $ignores_regex | xargs git branch -d
+git branch --merged | egrep -v "(^\*${ignores})" | xargs git branch -d
