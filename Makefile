@@ -6,7 +6,7 @@ DATADIR ?= $(DATAROOTDIR)
 MANDIR ?= $(DATAROOTDIR)/man
 
 # files that need mode 755
-EXEC_FILES = git-prune
+EXEC_FILES = git-cleanup
 
 .PHONY: all install uninstall
 

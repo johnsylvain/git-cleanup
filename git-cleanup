@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+ignores=("master" "dev")
+ignores_regex=""
+
+while getopts ":h:i:" opt; do
+  case $opt in
+    h|i)
+      declare "option_$opt=${OPTARG:-0}"
+      ;;
+    \?)
+      echo >&2 "Use 'git cleanup -h' to see usage info"
+      exit 1
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))
+
+if [[ $option_h ]]; then
+  cat <<EOS
+Usage:
+  git cleanup [-i <ignored branch>] [-h]
+  -i      - Specify a comma seperated list of branchs to ignore
+  -h      - Display the help screen
+
+Examples:
+  git cleanup -i feat-1,feat-2
+EOS
+  exit 0
+fi
+
+if [[ $option_i ]]; then
+  for x in $(echo $option_i | tr "," "\n")
+  do
+    ignores+=($x)
+  done
+
+  echo $ignores
+fi
+
+for y in ${ignores[@]}
+do
+  ignores_regex+="|${y}"
+done
+
+ignores_regex="(^\*${ignores_regex})"
+
+git branch --merged | egrep -v $ignores_regex | xargs git branch -d
